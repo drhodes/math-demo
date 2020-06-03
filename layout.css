@@ -1,0 +1,23 @@
+.row {
+   display: flex;
+   flex-direction: row;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;    
+}
+
+.space {
+    padding: 20px;
+}
+
+.selected {
+    background-color: #DDDDFF;
+    padding: 5px;
+}
+
+.unselected {
+    background-color: #EFEFEF;
+    padding: 5px;
+}

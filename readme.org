@@ -1,0 +1,7 @@
+Mathdemo.
+
+* bringing together three.js, mathjax and tween.js for live math demos
+sequencing visualizations
+
+
+
