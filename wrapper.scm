@@ -45,6 +45,13 @@
   (normalize-vector! dir)
   (js-invoke arrow "setDirection" dir))
 
+(define (get-arrow-len arrow) (js-ref arrow "length"))
+
+(define (set-arrow-len! arrow len)
+  (js-set! arrow "length" len)
+  (js-invoke arrow "setLength" len))
+
+;;(define (arrow-x arr) ())
 
 ;; vector
 (define (mk-vector x y z) (js-new "THREE.Vector3" x y z))
@@ -53,14 +60,6 @@
 (define (vec-y vec) (js-ref vec "y"))
 (define (vec-z vec) (js-ref vec "z"))
 
-;; utility
-(define (caddddr xs) (car (cdr (cdr (cdr (cdr xs))))))
-(define (get-current-frame) (js-eval "FRAME"))
-
-
-(define (neq? x y) (not (eq? x y)))
-
-(define (random) (js-call (js-eval "Math.random")))
 
 ;; animators
 
@@ -74,8 +73,6 @@
 
 (define (animate) (js-call (js-eval "_animate")))
 
-
-
 ;; camera
 (define (get-camera) (js-eval "camera"))
 
@@ -87,6 +84,33 @@
 
 (define (set-camera-position! cam v) (js-set! (js-eval "camera.position") "set" v))
 
-
 ;; scene
 (define (scene-add obj) (js-call (js-eval "_scene_add") obj))
+
+;; util
+(define (caddddr xs) (car (cdr (cdr (cdr (cdr xs))))))
+
+(define (get-current-frame) (js-eval "FRAME"))
+
+(define (neq? x y) (not (eq? x y)))
+
+(define (random) (js-call (js-eval "Math.random")))
+
+(define (interpolate-nums x y num-steps)
+  ;;(console-log (list x y))
+  (let ((delta (/ (- y x) num-steps)))
+    (if (< num-steps 1) (list)
+        (cons x (interpolate-nums (+ x delta) y (- num-steps 1))))))
+
+(define (zip-with-3 f xs ys zs)
+  (if (or (null? xs) (null? ys) (null? zs))
+      (list)
+      (cons (f (car xs) (car ys) (car zs))
+            (zip-with-3 f (cdr xs) (cdr ys) (cdr zs)))))
+
+;; :: Vector -> Vector -> Integer -> [Vector]
+(define (interpolate-vectors vec1 vec2 num-steps)
+  (let ((xs (interpolate-nums (vec-x vec1) (vec-x vec2) num-steps))
+        (ys (interpolate-nums (vec-y vec1) (vec-y vec2) num-steps))
+        (zs (interpolate-nums (vec-z vec1) (vec-z vec2) num-steps)))
+    (zip-with-3 mk-vector xs ys zs)))
