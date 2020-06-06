@@ -4,14 +4,17 @@ var camera = new THREE.PerspectiveCamera( 75, 1, 0.001, 100 );
 var renderer = new THREE.WebGLRenderer();
 canvas.appendChild( renderer.domElement );
 renderer.setSize( 600,600 );
-camera.position.z = 10;
+camera.position.y = 10;
+camera.position.x = 10;
 
 function Arrow(dir, origin, hex_color) {
     dir.normalize();
     var length = 5;
     var head_len = .40;
     var head_width = .20;
-    return new THREE.ArrowHelper( dir, origin, length, hex_color, head_len, head_width );
+    let arr = new THREE.ArrowHelper( dir, origin, length, hex_color, head_len, head_width );
+    arr.length = 5; // since arrow helper doesn't have a length.
+    return arr;
 }
 
 function setCameraPosX(cam, x) { cam.position.x = x; }
@@ -21,8 +24,6 @@ function setCameraPosZ(cam, z) { cam.position.z = z; }
 function getCameraPosX(cam, x) { return cam.position.x; }
 function getCameraPosY(cam, y) { return cam.position.y; }
 function getCameraPosZ(cam, z) { return cam.position.z; }
-
-
 
 function _scene_add(obj) { scene.add(obj); }
 
