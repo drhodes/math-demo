@@ -1,7 +1,7 @@
 Mathdemo.
 
-* bringing together three.js, mathjax and tween.js for live math demos
+* bringing together three.js, mathjax for live math demos
 sequencing visualizations
 
-
-
+* this browser based lisp editor
+https://shaunlebron.github.io/parinfer/demo

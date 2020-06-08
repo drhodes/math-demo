@@ -19,14 +19,11 @@
   (lambda ()
     (set! cur-step (+ cur-step 1))
     ;; mutate the arrow
-    (console-log arrow)
     ;; (set-arrow-dir! arrow (mk-vector (/ cur-step 10) 1 0))
     
     ;; return true when cur-step > num-steps
     ;; this indicates when the easing computation is done.
     (> cur-step num-steps)))
-
-
 
 (define (ease-camera-to target-vector look-vector num-steps)
   ;; return a function that interpolates a path which is stepped over

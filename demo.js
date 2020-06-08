@@ -3,7 +3,7 @@ scene.background = new THREE.Color( 0xffFFFF );
 var camera = new THREE.PerspectiveCamera( 75, 1, 0.001, 100 );
 var renderer = new THREE.WebGLRenderer();
 canvas.appendChild( renderer.domElement );
-renderer.setSize( 600,600 );
+renderer.setSize( 800,800 );
 camera.position.y = 10;
 camera.position.x = 10;
 
