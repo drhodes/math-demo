@@ -29,27 +29,23 @@
   ;; return a function that interpolates a path which is stepped over
   ;; mutating the arrow depending on the frame.
   (if (< num-steps 0) (raise "num-steps must be greater than 0"))
-  (define cur-step 0)
-
-  (define cam (get-camera))
-  (define start-vector (get-camera-pos cam))
-  
-  ;; generate a list of positions which will be indexed by the current
-  ;; step.
-  (define positions (interpolate-vectors start-vector target-vector num-steps))
-
-  
-  (lambda ()
-    ;; grab the first position and put the camera there.
-    (set-camera-pos! cam (car positions))
-    ;; drop the first position off the list.    
-    (set! positions (cdr positions))
-    ;; aim the camera 
-    (set-camera-look! cam look-vector)
-    ;; return true when positions empty    
-    ;; this indicates when the easing computation is done.
-    (null? positions)
-    ))
+  (let* ((cur-step 0)
+         (cam (get-camera))         
+         (start-vector (get-camera-pos cam))
+         
+         ;; generate a list of positions which will be indexed by the current
+         ;; step.
+         (positions (interpolate-vectors start-vector target-vector num-steps)))
+    (lambda ()
+      ;; grab the first position and put the camera there.
+      (set-camera-pos! cam (car positions))
+      ;; drop the first position off the list.    
+      (set! positions (cdr positions))
+      ;; aim the camera 
+      (set-camera-look! cam look-vector)
+      ;; return true when positions empty    
+      ;; this indicates when the easing computation is done.
+      (null? positions))))
 
 (define (gram-schmidt)
   ;; coordinate
