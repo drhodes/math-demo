@@ -63,24 +63,31 @@
     (scene-add arr))
   
   
-  ;; introduce some persistant objects
-  (define red-arrow   (mk-arrow (mk-vector 1 0 0) (mk-vector 0 0 0) 0xFF0000))
-  (define green-arrow (mk-arrow (mk-vector 0 1 0) (mk-vector 0 0 0) 0x00FF00))
-  (define blue-arrow  (mk-arrow (mk-vector 0 0 1) (mk-vector 0 0 0) 0x0000FF))
-  (scene-add red-arrow)
-  (scene-add green-arrow)
-  (scene-add blue-arrow)
+  ;; ;; introduce some persistant objects
+  ;; (define red-arrow   (mk-arrow (mk-vector 1 0 0) (mk-vector 0 0 0) 0xFF0000))
+  ;; (define green-arrow (mk-arrow (mk-vector 0 1 0) (mk-vector 0 0 0) 0x00FF00))
+  ;; (define blue-arrow  (mk-arrow (mk-vector 0 0 1) (mk-vector 0 0 0) 0x0000FF))
+  ;; (scene-add red-arrow)
+  ;; (scene-add green-arrow)
+  ;; (scene-add blue-arrow)
 
   (define num-steps 100)
   
-  (define red-move (ease-arrow-head-to red-arrow (mk-vector 1 1 1) num-steps))  
-  ((mk-animator (js-closure red-move)))
-  
-  (define cam-move (ease-camera-to (mk-vector 7 7 7) (mk-vector 0 0 0) num-steps))
-  ((mk-animator (js-closure cam-move)))
-  
+  ;; (define red-move (ease-arrow-head-to red-arrow (mk-vector 1 1 1) num-steps))  
+  ;; ((mk-animator (js-closure red-move)))
 
   
+  (let ((cam-move1 (ease-camera-to (mk-vector 0 -10 6) (mk-vector 0 0 0) num-steps))
+        (cam-move2 (ease-camera-to (mk-vector 10 0 0) (mk-vector 0 0 0) num-steps))
+        (cam-move3 (ease-camera-to (mk-vector 10 0 10) (mk-vector 0 0 0) num-steps))
+        (cam-move5 (ease-camera-to (mk-vector 10 0 0) (mk-vector 0 0 0) num-steps))
+        )
+    ;;((mk-animator (js-closure cam-move1)))
+    ((sequence-animators (list (js-closure cam-move1)
+                               (js-closure cam-move2)
+                               (js-closure cam-move3)
+                               (js-closure cam-move5)
+                               ))))
   ;;;;
   )
 

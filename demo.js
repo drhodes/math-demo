@@ -157,10 +157,24 @@ function _make_animator(f) {
         done = f();
         if (done) {
             return "done";
-        } else {
-	        requestAnimationFrame(do_animation);
         }
-        return "should be dead path in _make_animator";
+	    requestAnimationFrame(do_animation);
+    };
+    return do_animation;
+}
+
+function _sequence_animators(fs) {
+    let i = 0;
+    var do_animation = function() {
+        if (i >= fs.length) {
+            return "done";
+        }
+        done = fs[i]();
+        if (done && i < fs.length) {
+            // finished the current animator, onto the next.
+            i++;
+        } 
+	    requestAnimationFrame(do_animation);
     };
     return do_animation;
 }

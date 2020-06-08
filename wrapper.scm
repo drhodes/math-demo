@@ -67,6 +67,9 @@
 (define (mk-animator f)
   (js-call (js-eval "_make_animator") f))
 
+(define (sequence-animators fs)
+  (js-call (js-eval "_sequence_animators") (list->js-array fs)))
+
 
 ;; kick off the global rendering, this should not be called more than
 ;; once, because then there will be two render loops going.
