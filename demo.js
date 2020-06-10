@@ -4,8 +4,10 @@ var camera = new THREE.PerspectiveCamera( 75, 1, 0.001, 100 );
 var renderer = new THREE.WebGLRenderer({antialias: true});
 canvas.appendChild( renderer.domElement );
 renderer.setSize( 800,800 );
+camera.up.set(0, 0, 1);
 camera.position.y = 10;
 camera.position.x = 10;
+
 
 
 function Arrow(dir, origin, hex_color) {
