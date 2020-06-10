@@ -39,6 +39,10 @@
                   )
   (js-call (js-eval "Arrow") dir origin hex-color))
 
+
+;; scene
+(define (scene-add obj) (js-call (js-eval "_scene_add") obj))
+
 (define (normalize-vector! vec)
   (js-invoke vec "normalize"))
 
@@ -69,7 +73,7 @@
   (js-call (js-eval "_make_animator") f))
 
 (define (sequence-animators fs)
-  (js-call (js-eval "_sequence_animators") (list->js-array fs)))
+  (js-call (js-eval "_sequence_animators") (list->js-array (map js-closure fs))))
 
 
 ;; kick off the global rendering, this should not be called more than
@@ -79,19 +83,21 @@
 
 ;; camera
 (define (get-camera) (js-eval "camera"))
-
-;; (define (set-camera-zoom! cam zoom-level)
-;;   (console-log "ok")
-;;   ;;(js-invoke cam "zoom" zoom-level)
-;;   )
-
-
 (define (set-camera-position! cam v) (js-set! (js-eval "camera.position") "set" v))
 
-;; scene
-(define (scene-add obj) (js-call (js-eval "_scene_add") obj))
+;; fat arrow ------------------------------------------------------------------
+(define (fat-arrow hex-color)
+  (js-new "FatArrow" hex-color))
 
-;; util
+
+(define (fat-arrow-update arr tail head)
+  (js-invoke "update" arr tail head))
+
+(define (add-fat-arrow arr)
+  (scene-add arr ))
+
+
+;; util ------------------------------------------------------------------
 (define (caddddr xs) (car (cdr (cdr (cdr (cdr xs))))))
 
 (define (get-current-frame) (js-eval "FRAME"))

@@ -48,49 +48,55 @@
       ;; this indicates when the easing computation is done.
       (null? positions))))
 
+(define (ease-camera-from-to from-vector to-vector look-vector num-steps)
+  ;; return a function that interpolates a path which is stepped over
+  ;; mutating the arrow depending on the frame.
+  (if (< num-steps 0) (raise "num-steps must be greater than 0"))
+  (let* ((cur-step 0)
+         (cam (get-camera))         
+         ;; generate a list of positions which will be indexed by the current
+         ;; step.
+         (positions (interpolate-vectors from-vector to-vector num-steps)))
+    (lambda ()
+      ;; grab the first position and put the camera there.
+      (set-camera-pos! cam (car positions))
+      ;; drop the first position off the list.    
+      (set! positions (cdr positions))
+      ;; aim the camera 
+      (set-camera-look! cam look-vector)
+      ;; return true when positions empty    
+      ;; this indicates when the easing computation is done.
+      (null? positions))))
+
+
+(define (add-coordinate-system)
+  (let ((arr (mk-arrow (mk-vector 10 0 0) (mk-vector -100 0 0) 0xFFAAAA)))
+    (set-arrow-len! arr 1000)
+    (scene-add arr))
+  (let ((arr (mk-arrow (mk-vector 0 10 0) (mk-vector 0 -100 0) 0xAAFFAA)))
+    (set-arrow-len! arr 1000)
+    (scene-add arr))
+  (let ((arr (mk-arrow (mk-vector 0 0 10) (mk-vector 0 0 -100) 0xAAAAFF)))
+    (set-arrow-len! arr 1000)
+    (scene-add arr)))
+
 (define (gram-schmidt)
-  ;; coordinate
-  ;; grid plane.
-
-  
-  (let ((arr (mk-arrow (mk-vector 10 0 0) (mk-vector -100 0 0) 0xEEEEEE)))
-    (set-arrow-len! arr 1000)
-    (scene-add arr))
-  (let ((arr (mk-arrow (mk-vector 0 10 0) (mk-vector 0 -100 0) 0xEEEEEE)))
-    (set-arrow-len! arr 1000)
-    (scene-add arr))
-  (let ((arr (mk-arrow (mk-vector 0 0 10) (mk-vector 0 0 -100) 0xEEEEEE)))
-    (set-arrow-len! arr 1000)
-    (scene-add arr))
-  
-  
-  ;; ;; introduce some persistant objects
-  ;; (define red-arrow   (mk-arrow (mk-vector 1 0 0) (mk-vector 0 0 0) 0xFF0000))
-  ;; (define green-arrow (mk-arrow (mk-vector 0 1 0) (mk-vector 0 0 0) 0x00FF00))
-  ;; (define blue-arrow  (mk-arrow (mk-vector 0 0 1) (mk-vector 0 0 0) 0x0000FF))
-  ;; (scene-add red-arrow)
-  ;; (scene-add green-arrow)
-  ;; (scene-add blue-arrow)
-
-  (define num-steps 100)
-  
-  ;; (define red-move (ease-arrow-head-to red-arrow (mk-vector 1 1 1) num-steps))  
-  ;; ((mk-animator (js-closure red-move)))
-
+  (add-coordinate-system)  
+  (define num-steps 75)
   
   (let ((cam-move1 (ease-camera-to (mk-vector 0 -10 6) (mk-vector 0 0 0) num-steps))
-        (cam-move2 (ease-camera-to (mk-vector 10 0 0) (mk-vector 0 0 0) num-steps))
-        (cam-move3 (ease-camera-to (mk-vector 10 0 10) (mk-vector 0 0 0) num-steps))
-        (cam-move5 (ease-camera-to (mk-vector 10 0 0) (mk-vector 0 0 0) num-steps))
-        )
-    ;;((mk-animator (js-closure cam-move1)))
-    ((sequence-animators (list (js-closure cam-move1)
-                               (js-closure cam-move2)
-                               (js-closure cam-move3)
-                               (js-closure cam-move5)
-                               ))))
+        (cam-move5 (ease-camera-to (mk-vector 5 11 11) (mk-vector 5 0 0) num-steps))
+        (cam-move6 (ease-camera-from-to (mk-vector 5 0 0) (mk-vector 5 11 11)
+                                        (mk-vector 5 0 0) num-steps))
+        (cam-move6 (ease-camera-from-to (mk-vector 5 11 11) (mk-vector 0 11 11)
+                                        (mk-vector 0 0 0) num-steps)))
+    ((sequence-animators
+      (list (ease-camera-from-to (mk-vector 5 0 0) (mk-vector 5 10 0) (mk-vector 0 0 0) num-steps)
+            (ease-camera-from-to (mk-vector 5 10 0) (mk-vector 5 10 10) (mk-vector 0 0 0) num-steps)
+            (ease-camera-from-to (mk-vector 5 10 10) (mk-vector 5 0 10) (mk-vector 0 0 0) num-steps)
+            (ease-camera-from-to (mk-vector 5 0 10) (mk-vector 5 0 0) (mk-vector 0 0 0) num-steps))))))
   ;;;;
-  )
+  
 
 (console-log "finished")
 
