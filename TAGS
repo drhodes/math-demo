@@ -1,0 +1,58 @@
+
+arrow.scm,257
+(define arrow-cmd-name cadr)arrow-cmd-name4,85
+(define arrow-cmd-tail caddr)arrow-cmd-tail5,114
+(define arrow-cmd-head cadddr)arrow-cmd-head6,144
+(define arrow-cmd-color caddddr)arrow-cmd-color7,175
+(define (eval-add-arrow cmd)eval-add-arrow9,209
+
+demo.scm,422
+(define (ease-arrow-head-to arrow target-vector num-steps)ease-arrow-head-to11,259
+(define (ease-camera-to target-vector look-vector num-steps)ease-camera-to28,851
+(define (ease-camera-from-to from-vector to-vector look-vector num-steps)ease-camera-from-to50,1796
+(define color-red 0xFF0000)color-red70,2694
+(define (add-coordinate-system)add-coordinate-system72,2723
+(define (gram-schmidt)gram-schmidt83,3135
+
+wrapper.scm,3000
+(define (set-camera-pos-x! camera x) (js-call (js-eval "setCameraPosX") camera x))set-camera-pos-x!3,43
+(define (set-camera-pos-y! camera y) (js-call (js-eval "setCameraPosY") camera y))set-camera-pos-y!4,126
+(define (set-camera-pos-z! camera z) (js-call (js-eval "setCameraPosZ") camera z))set-camera-pos-z!5,209
+(define (get-camera-pos-x camera) (js-call (js-eval "getCameraPosX") camera))get-camera-pos-x7,293
+(define (get-camera-pos-y camera) (js-call (js-eval "getCameraPosY") camera))get-camera-pos-y8,371
+(define (get-camera-pos-z camera) (js-call (js-eval "getCameraPosZ") camera))get-camera-pos-z9,449
+(define (get-camera-pos camera) (js-ref camera "position"))get-camera-pos10,527
+(define (set-camera-pos! camera vec)set-camera-pos!12,659
+(define (set-camera-look! camera vector) (js-invoke camera "lookAt" vector))set-camera-look!17,821
+(define (mk-color hex) (js-obj "color" hex))mk-color20,900
+(define (mesh-basic-material color)mesh-basic-material22,946
+(define (set-scene-prop p x) (js-set! scene p x))set-scene-prop26,1036
+(define (set-scene-background color) (set-scene-prop "background" color))set-scene-background27,1086
+(define (scene-add! scene obj) (js-invoke scene "add" obj))scene-add!28,1160
+(define (mk-renderer) (js-new "THREE.WebGLRenderer"))mk-renderer31,1233
+(define (set-renderer-size! w h) (js-invoke renderer "setSize" w h))set-renderer-size!32,1287
+(define (mk-arrow dir       ; vectormk-arrow35,1366
+(define (scene-add obj) (js-call (js-eval "_scene_add") obj))scene-add43,1559
+(define (normalize-vector! vec)normalize-vector!45,1622
+(define (set-arrow-dir! arrow dir)set-arrow-dir!48,1686
+(define (get-arrow-len arrow) (js-ref arrow "length"))get-arrow-len52,1788
+(define (set-arrow-len! arrow len)set-arrow-len!54,1844
+(define (mk-vector x y z) (js-new "THREE.Vector3" x y z))mk-vector61,1987
+(define (vec-x vec) (js-ref vec "x"))vec-x63,2046
+(define (vec-y vec) (js-ref vec "y"))vec-y64,2084
+(define (vec-z vec) (js-ref vec "z"))vec-z65,2122
+(define (mk-animator f)mk-animator71,2203
+(define (sequence-animators fs)sequence-animators74,2270
+(define (animate) (js-call (js-eval "_animate")))animate81,2517
+(define (get-camera) (js-eval "camera"))get-camera84,2578
+(define (set-camera-position! cam v) (js-set! (js-eval "camera.position") "set" v))set-camera-position!85,2619
+(define (fat-arrow hex-color)fat-arrow88,2784
+(define (fat-arrow-update arr tail head)fat-arrow-update92,2849
+(define (add-fat-arrow arr)add-fat-arrow95,2929
+(define (caddddr xs) (car (cdr (cdr (cdr (cdr xs))))))caddddr100,3054
+(define (get-current-frame) (js-eval "FRAME"))get-current-frame102,3110
+(define (neq? x y) (not (eq? x y)))neq?104,3158
+(define (random) (js-call (js-eval "Math.random")))random106,3195
+(define (interpolate-nums x y num-steps)interpolate-nums108,3248
+(define (zip-with-3 f xs ys zs)zip-with-3114,3458
+(define (interpolate-vectors vec1 vec2 num-steps)interpolate-vectors121,3694

@@ -8,6 +8,7 @@
 (define (get-camera-pos-y camera) (js-call (js-eval "getCameraPosY") camera))
 (define (get-camera-pos-z camera) (js-call (js-eval "getCameraPosZ") camera))
 (define (get-camera-pos camera) (js-ref camera "position"))
+
 ;;(define (set-camera-pos! camera vec) (js-set! camera "position" vec))
 (define (set-camera-pos! camera vec)
   (set-camera-pos-x! camera (vec-x vec))
