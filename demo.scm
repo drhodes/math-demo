@@ -84,17 +84,20 @@
   (add-coordinate-system)  
   (define num-steps 75)
   
-  (let ((cam-move1 (ease-camera-to (mk-vector 0 -10 6) (mk-vector 0 0 0) num-steps))
-        (cam-move5 (ease-camera-to (mk-vector 5 11 11) (mk-vector 5 0 0) num-steps))
-        (cam-move6 (ease-camera-from-to (mk-vector 5 0 0) (mk-vector 5 11 11)
-                                        (mk-vector 5 0 0) num-steps))
-        (cam-move6 (ease-camera-from-to (mk-vector 5 11 11) (mk-vector 0 11 11)
-                                        (mk-vector 0 0 0) num-steps)))
+  (let ((red-arrow (add-fat-arrow color-red))
+        (green-arrow (add-fat-arrow color-green))
+        (blue-arrow (add-fat-arrow color-blue)))
+
+    (fat-arrow-update red-arrow (mk-vector 1 0 0) (mk-vector 5 0 0))
+    (fat-arrow-update green-arrow (mk-vector 0 1 0) (mk-vector 0 5 0))
+    (fat-arrow-update blue-arrow (mk-vector 0 0 1) (mk-vector 0 0 5))
+    
     ((sequence-animators
-      (list (ease-camera-from-to (mk-vector 5 0 0) (mk-vector 5 10 0) (mk-vector 0 0 0) num-steps)
-            (ease-camera-from-to (mk-vector 5 10 0) (mk-vector 5 10 10) (mk-vector 0 0 0) num-steps)
-            (ease-camera-from-to (mk-vector 5 10 10) (mk-vector 5 0 10) (mk-vector 0 0 0) num-steps)
-            (ease-camera-from-to (mk-vector 5 0 10) (mk-vector 5 0 0) (mk-vector 0 0 0) num-steps))))))
+      (list (ease-camera-from-to (mk-vector 10 0 0) (mk-vector 10 10 0) (mk-vector 0 0 0) num-steps)
+            (ease-camera-from-to (mk-vector 10 10 0) (mk-vector 10 10 10) (mk-vector 0 0 0) num-steps)
+            (ease-camera-from-to (mk-vector 10 10 10) (mk-vector 10 0 10) (mk-vector 0 0 0) num-steps)
+            (ease-camera-from-to (mk-vector 10 0 10) (mk-vector 10 0 0) (mk-vector 0 0 0) num-steps)
+            (ease-camera-from-to (mk-vector 10 0 10) (mk-vector 10 4 10) (mk-vector 0 0 0) num-steps))))))
   ;;;;
   
 

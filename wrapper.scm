@@ -89,12 +89,16 @@
 (define (fat-arrow hex-color)
   (js-new "FatArrow" hex-color))
 
-
 (define (fat-arrow-update arr tail head)
-  (js-invoke "update" arr tail head))
+  (js-invoke arr "update" tail head))
 
-(define (add-fat-arrow arr)
-  (scene-add arr ))
+(define (get-scene) (js-eval "scene"))
+
+(define (add-fat-arrow hex-color)
+  (let ((arr (fat-arrow hex-color)))
+    (js-invoke arr "add" (get-scene))
+    arr
+    ))
 
 
 ;; util ------------------------------------------------------------------

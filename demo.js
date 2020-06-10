@@ -26,24 +26,13 @@ class FatArrow {
         let cylMat = new THREE.MeshBasicMaterial( {color: hexColor} );
         this.cylinder = new THREE.Mesh( this.cylGeom, cylMat ); 
         this.cylGeom.applyMatrix4(new THREE.Matrix4().makeTranslation(0, .5, 0));
-        this.initCylGeom = new THREE.CylinderGeometry( .03, .03, 1, 10 ); // find better way to copy this.
-        this.initCylGeom.applyMatrix4(new THREE.Matrix4().makeTranslation(0, .5, 0)); 
        
         this.coneGeom = new THREE.ConeGeometry( .1, .5, 10 );
         let coneMat = new THREE.MeshBasicMaterial( {color: hexColor} );
         this.cone = new THREE.Mesh( this.coneGeom, coneMat);
-        this.initConeGeom = new THREE.ConeGeometry( .1, .5, 10 );
         
-        this.group = new THREE.Group();
-        this.group.add(this.cylinder);
-        this.group.add(this.cone);
     }
-
-    reset_matrix() {
-        this.cylGeom.copy(this.initCylGeom); 
-        this.coneGeom.copy(this.initConeGeom);
-    }
-    
+   
     move_to(p) {
         this.tail = p;
         this.cylGeom.applyMatrix4(new THREE.Matrix4().makeTranslation(p.x, p.y, p.z)); 
@@ -54,20 +43,25 @@ class FatArrow {
     }
 
     setup_cylinder() {
-        // PRECONDITION. the matrix should be reset.
+        this.cylinder.position.set( 0, 0, 0 );
+        this.cylinder.rotation.set( 0, 0, 0 );
+        this.cylinder.scale.set( 1, 1, 1 );
         // scale it.
         let len = this.len();
         // console.log(len);
         let scale_matrix = new THREE.Matrix4().makeScale(1, len, 1);
         // console.log(scale_matrix);
-        this.cylGeom.applyMatrix4(scale_matrix);
+        this.cylinder.applyMatrix4(scale_matrix);
         // POST. the arrow is ready to be rotated.
     }
     
     setup_cone() {
+        this.cone.position.set( 0, 0, 0 );
+        this.cone.rotation.set( 0, 0, 0 );
+        this.cone.scale.set( 1, 1, 1 );
         // move the cone to be flush with cylinder
         let trans_matrix = new THREE.Matrix4().makeTranslation(0, this.len(), 0);
-        this.coneGeom.applyMatrix4(trans_matrix);
+        this.cone.applyMatrix4(trans_matrix);
     }
 
     setup_rotate() {
@@ -88,20 +82,21 @@ class FatArrow {
             return;
         } else {
             let rot_mat = new THREE.Matrix4().makeRotationAxis(axis, theta);
-            this.group.applyMatrix4(rot_mat);
+            this.cone.applyMatrix4(rot_mat);
+            this.cylinder.applyMatrix4(rot_mat);
         }
     }
     
     setup_move() {
         let trans_mat = new THREE.Matrix4().makeTranslation(this.tail.x, this.tail.y, this.tail.z);
-        this.group.applyMatrix4(trans_mat);
+        this.cylinder.applyMatrix4(trans_mat);
+        this.cone.applyMatrix4(trans_mat);
     }
     
     // this should be the only public update method.
     update(tail, head) {
         this.tail = tail;
         this.head = head;        
-        this.reset_matrix();        
         this.setup_cylinder();
         this.setup_cone();
         this.setup_rotate();
@@ -114,24 +109,10 @@ class FatArrow {
     }    
     
     add(scene) {
-        scene.add(this.group);
+        scene.add(this.cone);
+        scene.add(this.cylinder);
     }
 }
-
-let red = new FatArrow(0xFF0000);
-red.add(scene);
-red.update(new THREE.Vector3(1, 0, 0),
-           new THREE.Vector3(5, 0, 0));
-
-let grn = new FatArrow(0x00FF00);
-grn.add(scene);
-grn.update(new THREE.Vector3(0, 1, 0),
-           new THREE.Vector3(0, 5, 0));
-
-let blu = new FatArrow(0x0000FF);
-blu.add(scene);
-blu.update(new THREE.Vector3(0, 0, 1), 
-           new THREE.Vector3(0, 0, 5));
 
 let gry = new FatArrow(0x888888);
 gry.add(scene);
