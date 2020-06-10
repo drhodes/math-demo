@@ -1,4 +1,5 @@
 (load "wrapper.scm")
+(load "colors.scm")
 (console-log "starting demo")
 
 (animate) ;; start rendering.
