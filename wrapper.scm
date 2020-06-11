@@ -94,6 +94,9 @@
 
 (define (get-scene) (js-eval "scene"))
 
+(define (fat-arrow-head arr) (js-ref arr "head"))
+(define (fat-arrow-tail arr) (js-ref arr "tail"))
+
 (define (add-fat-arrow hex-color)
   (let ((arr (fat-arrow hex-color)))
     (js-invoke arr "add" (get-scene))
