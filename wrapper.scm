@@ -16,8 +16,6 @@
   (set-camera-pos-z! camera (vec-z vec)))
 
 (define (set-camera-look! camera vector) (js-invoke camera "lookAt" vector))
-
-
 (define (mk-color hex) (js-obj "color" hex))
 
 (define (mesh-basic-material color)

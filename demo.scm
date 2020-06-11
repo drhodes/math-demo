@@ -24,6 +24,7 @@
       ;; this indicates when the easing computation is done.
       (null? positions))))
 
+
 (define (ease-camera-to target-vector look-vector num-steps)
   ;; return a function that interpolates a path which is stepped over
   ;; mutating the arrow depending on the frame.
@@ -88,8 +89,6 @@
 (define (add-latex latex-string) nop)
 
 
-
-
 (define (add-coordinate-system)
   (let ((arr (mk-arrow (mk-vector 10 0 0) (mk-vector -100 0 0) 0xFFAAAA)))
     (set-arrow-len! arr 1000)
@@ -100,6 +99,7 @@
   (let ((arr (mk-arrow (mk-vector 0 0 10) (mk-vector 0 0 -100) 0xAAAAFF)))
     (set-arrow-len! arr 1000)
     (scene-add arr)))
+
 
 (define (gram-schmidt)
   (add-coordinate-system)  

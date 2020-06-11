@@ -1,14 +1,15 @@
 var scene = new THREE.Scene();
-scene.background = new THREE.Color( 0xffFFFF );
-var camera = new THREE.PerspectiveCamera( 75, 1, 0.001, 100 );
+scene.background = new THREE.Color( 0xf8f8f8 );
+var camera = new THREE.PerspectiveCamera( 65, 1, 0.001, 100 );
 var renderer = new THREE.WebGLRenderer({antialias: true});
 canvas.appendChild( renderer.domElement );
-renderer.setSize( 800,800 );
+renderer.setSize(700, 700);
+
 camera.up.set(0, 0, 1);
 camera.position.y = 10;
 camera.position.x = 10;
-
-
+camera.position.z = 10;
+camera.lookAt(new THREE.Vector3(0, 0, 0));
 
 function Arrow(dir, origin, hex_color) {
     dir.normalize();
@@ -20,6 +21,14 @@ function Arrow(dir, origin, hex_color) {
     return arr;
 }
 
+function animate() {
+    //controls.autoRotate();
+	requestAnimationFrame(animate);
+	renderer.render( scene, camera );
+}
+
+animate();
+
 class FatArrow {
     constructor(hexColor) {
         this.cylGeom = new THREE.CylinderGeometry( .03, .03, 1, 10 );
@@ -30,7 +39,8 @@ class FatArrow {
         this.coneGeom = new THREE.ConeGeometry( .1, .5, 10 );
         let coneMat = new THREE.MeshBasicMaterial( {color: hexColor} );
         this.cone = new THREE.Mesh( this.coneGeom, coneMat);
-        
+
+        this.CONE_HEIGHT = .25; // why is this .25?
     }
    
     move_to(p) {
@@ -47,10 +57,8 @@ class FatArrow {
         this.cylinder.rotation.set( 0, 0, 0 );
         this.cylinder.scale.set( 1, 1, 1 );
         // scale it.
-        let len = this.len();
-        // console.log(len);
+        let len = this.len() - this.CONE_HEIGHT;
         let scale_matrix = new THREE.Matrix4().makeScale(1, len, 1);
-        // console.log(scale_matrix);
         this.cylinder.applyMatrix4(scale_matrix);
         // POST. the arrow is ready to be rotated.
     }
@@ -60,7 +68,7 @@ class FatArrow {
         this.cone.rotation.set( 0, 0, 0 );
         this.cone.scale.set( 1, 1, 1 );
         // move the cone to be flush with cylinder
-        let trans_matrix = new THREE.Matrix4().makeTranslation(0, this.len(), 0);
+        let trans_matrix = new THREE.Matrix4().makeTranslation(0, this.len() - this.CONE_HEIGHT, 0);
         this.cone.applyMatrix4(trans_matrix);
     }
 
@@ -70,14 +78,9 @@ class FatArrow {
         let v2 = new THREE.Vector3(this.head.x - this.tail.x,
                                    this.head.y - this.tail.y,
                                    this.head.z - this.tail.z);
-        // console.log(v1);
-        // console.log(v2);        
         let axis = v1.clone().cross(v2);
-        // console.log(axis);
         let theta = v1.angleTo(v2);
-        // console.log(theta);
         axis.normalize();
-        // console.log(axis.length());
         if (axis.length() < .01) {
             return;
         } else {
@@ -103,10 +106,6 @@ class FatArrow {
         this.setup_move();
         // move group to tail position.
     }
-
-    rotateX(angle) {
-        this.group.rotateX(angle);
-    }    
     
     add(scene) {
         scene.add(this.cone);
@@ -114,7 +113,7 @@ class FatArrow {
     }
 }
 
-let gry = new FatArrow(0x888888);
+let gry = new FatArrow(0xFF0000);
 gry.add(scene);
 gry.update(new THREE.Vector3(0, 0, 0), 
            new THREE.Vector3(1, 1, 1));
@@ -129,11 +128,7 @@ function getCameraPosZ(cam, z) { return cam.position.z; }
 
 function _scene_add(obj) { scene.add(obj); }
 
-function _animate() {
-    //controls.autoRotate();
-	requestAnimationFrame(_animate);
-	renderer.render( scene, camera );
-}
+
 
 function _make_animator(f) {    
     var do_animation = function() {
@@ -146,7 +141,7 @@ function _make_animator(f) {
     return do_animation;
 }
 
-function _sequence_animators(fs) {
+function sequence_animators(fs) {
     let i = 0;
     var do_animation = function() {
         if (i >= fs.length) {
@@ -162,3 +157,9 @@ function _sequence_animators(fs) {
     return do_animation;
 }
 
+function sequence(xs) {
+    sequence_animators(xs)();   
+}
+
+
+console.log("loaded demo.js");
