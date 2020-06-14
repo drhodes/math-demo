@@ -113,11 +113,6 @@ class FatArrow {
     }
 }
 
-let gry = new FatArrow(0xFF0000);
-gry.add(scene);
-gry.update(new THREE.Vector3(0, 0, 0), 
-           new THREE.Vector3(1, 1, 1));
-
 function setCameraPosX(cam, x) { cam.position.x = x; }
 function setCameraPosY(cam, y) { cam.position.y = y; }
 function setCameraPosZ(cam, z) { cam.position.z = z; }

@@ -4,32 +4,20 @@
     <meta charset="utf-8" /> 
     <title>math demo</title>
     <link rel="stylesheet" type="text/css" href="layout.css">
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   </head>
   <body>
-    <div class="row space">
+    <div  class="row space">
       <div id="canvas"> </div>
       <div class="space"> </div>
-      <div class="col">
-        <div id="start-state" class="unselected">
-          <p> \[ start \ state   \] </p>
-          <p> gram-schmidt </p>
-        </div>  
-        <div id="step2" class="selected">
-          <p>
-          <p>
-            \[\mathbf{e}_1 = \frac{\mathbf{u}_1}{||\mathbf{u}_1||}\]
-        </p></div> 
-        <div id="step3" class="unselected"><p> \[x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\] </p></div>  
-        <div id="step4" class="unselected"><p> \[x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\] </p></div>
-        <div id="step5" class="unselected"><p> \[x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\] </p></div>
-        <div id="step6" class="unselected"><p> \[x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\] </p></div>
-      </div>
+      <div id="steplist" class="col">
+      </div> 
     </div>
 
     <script src="js/three.js"></script>
+    <script src="colors.js"></script>
     <script src="demo.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
     <script src="gram_schmidt.js"></script>
     
   </body>

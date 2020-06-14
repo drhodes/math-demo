@@ -67,26 +67,6 @@ function ease_camera_to(tgt_vec, look_vec, num_steps) {
     }
 }
 
-// (define (ease-arrow arr tail-to head-to num-steps)
-//   ;; return a function that interpolates a path which is stepped over
-//   ;; mutating the arrow depending on the frame.
-//   (if (< num-steps 0) (raise "num-steps must be greater than 0"))
-//   (let* ((cur-step 0)
-//          ;; generate a list of positions which will consumed by the
-//          ;; lambda
-//          (tail-positions (interpolate-vectors (fat-arrow-tail arr) tail-to num-steps))
-//          (head-positions (interpolate-vectors (fat-arrow-head arr) head-to num-steps)))
-//     (lambda ()
-//       (fat-arrow-update arr (car tail-positions) (car head-positions))
-      
-//       (set! tail-positions (cdr tail-positions))
-//       (set! head-positions (cdr head-positions))
-      
-//       ;; aim the camera 
-//       ;; return true when positions empty    
-//       ;; this indicates when the easing computation is done.
-//       (or (null? head-positions)
-//           (null? tail-positions)))))
 function ease_arrow_from_to(arr, from_pair, to_pair, num_steps) {
     if (num_steps < 0) {
         throw "num_steps must be greater than 0";
