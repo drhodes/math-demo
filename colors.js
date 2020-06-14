@@ -1,0 +1,5 @@
+const COLOR_RED   = 0xFF0000;
+const COLOR_GREEN = 0x00FF00;
+const COLOR_BLUE  = 0x0000FF;
+const COLOR_GRAY  = 0xAAAAAA;
+
