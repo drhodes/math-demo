@@ -11,7 +11,7 @@ camera.position.x = 10;
 camera.position.z = 10;
 camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-function Arrow(dir, origin, hex_color) {
+function Segment(dir, origin, hex_color) {
     dir.normalize();
     var length = 5;
     var head_len = .40;
@@ -42,12 +42,18 @@ class FatArrow {
 
         this.CONE_HEIGHT = .25; // why is this .25?
     }
-   
+    
     move_to(p) {
         this.tail = p;
         this.cylGeom.applyMatrix4(new THREE.Matrix4().makeTranslation(p.x, p.y, p.z)); 
     }
 
+    ease_to(v1, v2, num_frames) {
+        return ease_arrow_head_from_to(this, v1, v2, num_frames);
+    }
+
+
+    
     len() {
         return this.head.distanceTo(this.tail);
     }
@@ -95,6 +101,10 @@ class FatArrow {
         this.cylinder.applyMatrix4(trans_mat);
         this.cone.applyMatrix4(trans_mat);
     }
+
+    head_x() { return this.head.x; }
+    head_y() { return this.head.y; }
+    head_z() { return this.head.z; }
     
     // this should be the only public update method.
     update(tail, head) {

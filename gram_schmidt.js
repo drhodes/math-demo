@@ -84,25 +84,16 @@ function ease_arrow_from_to(arr, from_pair, to_pair, num_steps) {
 }
 
 function add_coordinate_system() {
-    var arr1 = Arrow(new THREE.Vector3(10, 0, 0), new THREE.Vector3(-100, 0, 0), 0xFFAAAA);
-    arr1.setLength(1000);
-    arr1.length=1000;
-    scene.add(arr1);
-    
-    arr2 = Arrow(new THREE.Vector3(0, 10, 0), new THREE.Vector3(0, -100, 0), 0xAAFFAA);
-    arr2.setLength(1000);
-    arr2.length=1000;
-    scene.add(arr2);
-    
-    arr3 = Arrow(new THREE.Vector3(0, 0, 10), new THREE.Vector3(0, 0, -100), 0xAAAAFF);
-    arr3.setLength(1000);
-    arr3.length=1000;
-    scene.add(arr3);
+    function f(v, w, color) {
+        var arr = Segment(v, w, color);
+        arr.setLength(1000);
+        arr.length=1000;
+        scene.add(arr);
+    }
+    f(vec(10, 0, 0), vec(-100, 0, 0), 0xFFAAAA);
+    f(vec(0, 10, 0), vec(0, -100, 0), 0xAAFFAA);
+    f(vec(0, 0, 10), vec(0, 0, -100), 0xAAAAFF);
 }
-
-const COLOR_RED = 0xFF0000;
-const COLOR_BLUE = 0x0000FF;
-const COLOR_GREEN = 0x00FF00;
 
 function vec(x,y,z) {
     return new THREE.Vector3(x,y,z);
@@ -115,38 +106,111 @@ function AddArrow(tail, head, color) {
     return arr;
 }
 
+function AddStep(step_name, latex, sequence_callback) {
+    steps.add(step_name, latex, sequence_callback);
+}
 
+class Step {
+    constructor(step_name, latex, sequence_callback) {
+        this.node = document.createElement("div");
+        this.node.setAttribute("class", "unselected");
+        this.node.append(MathJax.tex2svg(latex, {scale: 200}));
+        this.img = null;
+
+		// var texture = new THREE.TextureLoader().load( 'imgs/math-1.jpg' );
+        // texture.repeat.set(5,5);
+		// var geometry = new THREE.BoxBufferGeometry( .1, 2, 3 );
+		// var material = new THREE.MeshBasicMaterial( { map: texture } );
+        // var mesh = new THREE.Mesh(geometry, material);
+        // scene.add(mesh);
+    }
+
+    select() { this.node.setAttribute("class", "selected"); }
+    unselect() { this.node.setAttribute("class", "unselected"); }
+
+    get_svg() {
+        //return new THREE.SVGObject(this.node.children[0].children[0]);
+    }
+}
+
+
+class StepList {
+    constructor() {
+        MathJax.svgStylesheet();
+        this.steps = [];
+    }
+    
+    add(step_name, latex, sequence_callback) {
+        var step = new Step(step_name, latex, sequence_callback);
+        steplist.appendChild(step.node);
+        this.steps.push(step);
+        console.log(step.get_svg());
+        sequence_callback();
+    }
+}
+
+let steps = new StepList();
+
+// -----------------------------------------------------------------------------
 function gram_schmidt() {
+    //let u1 = Label("u_1").hide();
+
+    // MATH LABELS...
+    var geometry = new THREE.BufferGeometry();
+    var vertices = [];
+    var textureLoader = new THREE.TextureLoader();
+    var sprite = textureLoader.load('./imgs/u_1.png');
+    vertices.push(0, 0, 0);
+
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+
+    material = new THREE.PointsMaterial({size:1,
+                                         map:sprite,
+                                         //depthTest: false,
+                                         transparent: true, });
+    var particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+
+
+    // this is the only code a demo maker needs to worry about.
     add_coordinate_system();
-
-    let red_arrow = AddArrow(vec(0, 0, 0), vec(5, 0, 0), COLOR_RED);
-    let green_arrow = AddArrow(vec(0, 0, 0), vec(0, 5, 0), COLOR_GREEN);
-    let blue_arrow = AddArrow(vec(0, 0, 0), vec(0, 0, 5), COLOR_BLUE);
-
-    // these sequences are done in parallel
-    sequence([
-        ease_arrow_head_from_to(red_arrow, vec(5, 0, 0), vec(0, 5, 0), 50),
-        ease_arrow_head_from_to(red_arrow, vec(0, 5, 0), vec(0, 0, 5), 50),
-        ease_arrow_from_to(red_arrow, [vec(0, 0, 0), vec(5, 0, 0)], [vec(0, 0, 5), vec(5, 0, 5)], 50),
-    ]);
-    sequence([
-        ease_arrow_head_from_to(green_arrow, vec(0, 5, 0), vec(0, 0, 5), 50),
-        ease_arrow_head_from_to(green_arrow, vec(0, 0, 5), vec(5, 0, 0), 50),
-        ease_arrow_head_from_to(green_arrow, vec(5, 0, 0), vec(0, 5, 0), 50),
-    ]);
-    sequence([
-        ease_arrow_head_from_to(blue_arrow, vec(0, 0, 5), vec(5, 0, 0), 50),
-        ease_arrow_head_from_to(blue_arrow, vec(5, 0, 0), vec(0, 5, 0), 50),
-        ease_arrow_head_from_to(blue_arrow, vec(0, 5, 0), vec(0, 0, 5), 50),
-    ]);
-
-    // camera
-    sequence([
-        ease_camera_to(vec(1,1,5), vec(0, 0, 5), 450),
-    ]);
-               
     
+    let origin = vec(0,0,0);
+    let p1 = vec(5, 0, 0);
+    let p2 = vec(0, 5, 0);
+    let p3 = vec(0, 0, 5);
     
+    let red_arrow = AddArrow(origin, p1, COLOR_RED);
+    let green_arrow = AddArrow(origin, p2, COLOR_GREEN);
+    let blue_arrow = AddArrow(origin, p3, COLOR_BLUE);
+
+    
+    /// ------------------------------------------------------------------
+    AddStep(        
+        "name-of-step",
+        "\\mathbf{e}_1 = \\frac{\\mathbf{u}_1}{||\\mathbf{u}_1||}", 
+        function() {
+            sequence([
+                red_arrow.ease_to(p1, p2, 200),
+                red_arrow.ease_to(p2, p3, 200),
+                red_arrow.ease_to(p3, p1, 200),
+            ]);
+
+            // proto math labels.
+            sequence([
+                function() {
+                    particles.position.set(red_arrow.head_x() + 0,
+                                           red_arrow.head_y() + 0,
+                                           red_arrow.head_z() + .3);
+                    return false;
+                },
+            ]);
+            
+            // camera
+            sequence([
+                ease_camera_to(vec(5, -7, 7), origin, 400), 
+            ]);
+        });
 }
 
 
