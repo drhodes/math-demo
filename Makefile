@@ -8,7 +8,7 @@ clean: ## clean all the things
 	echo implement clean makefile rule
 
 work: ## open all files in editor
-	emacs -nw *.js *.scm
+	emacs -nw *.js 
 
 serve: ## goto localhost:8000/mathdemo.html
 	python -m SimpleHTTPServer 8000
