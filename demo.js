@@ -3,7 +3,7 @@ scene.background = new THREE.Color( 0xf8f8f8 );
 var camera = new THREE.PerspectiveCamera( 65, 1, 0.001, 100 );
 var renderer = new THREE.WebGLRenderer({antialias: true});
 canvas.appendChild( renderer.domElement );
-renderer.setSize(700, 700);
+renderer.setSize(800, 600);
 
 camera.up.set(0, 0, 1);
 camera.position.y = 10;
@@ -26,12 +26,14 @@ function animate() {
 	requestAnimationFrame(animate);
 	renderer.render( scene, camera );
 }
-
 animate();
 
+
 class FatArrow {
-    constructor(hexColor) {
-        this.cylGeom = new THREE.CylinderGeometry( .03, .03, 1, 10 );
+    constructor(hexColor, radius) {
+        let r = radius ? radius : .03;
+        
+        this.cylGeom = new THREE.CylinderGeometry( r, r, 1, 10 );
         let cylMat = new THREE.MeshBasicMaterial( {color: hexColor} );
         this.cylinder = new THREE.Mesh( this.cylGeom, cylMat ); 
         this.cylGeom.applyMatrix4(new THREE.Matrix4().makeTranslation(0, .5, 0));
@@ -51,9 +53,7 @@ class FatArrow {
     ease_to(v1, v2, num_frames) {
         return ease_arrow_head_from_to(this, v1, v2, num_frames);
     }
-
-
-    
+   
     len() {
         return this.head.distanceTo(this.tail);
     }
@@ -134,24 +134,22 @@ function getCameraPosZ(cam, z) { return cam.position.z; }
 function _scene_add(obj) { scene.add(obj); }
 
 
+// -----------------------------------------------------------------------------
+// each f in fs is a callback representing an animation in
+// progress. Each frame of the animation is performed by calling the
+// callback.
 
-function _make_animator(f) {    
-    var do_animation = function() {
-        done = f();
-        if (done) {
-            return "done";
-        }
-	    requestAnimationFrame(do_animation);
-    };
-    return do_animation;
-}
+// If the callback returns true, then the animation is done and it is
+// time to start the next animation.
+
+// If the callback return false, then the animation is still running,
+// so call the callback again.
 
 function sequence_animators(fs) {
     let i = 0;
     var do_animation = function() {
-        if (i >= fs.length) {
-            return "done";
-        }
+        if (i >= fs.length) return "done";
+        
         done = fs[i]();
         if (done && i < fs.length) {
             // finished the current animator, onto the next.
