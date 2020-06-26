@@ -8,13 +8,13 @@ clean: ## clean all the things
 	echo implement clean makefile rule
 
 work: ## open all files in editor
-	emacs -nw *.js 
+	emacs -nw *.js Makefile
 
 serve: ## goto localhost:8000/mathdemo.html
 	python -m SimpleHTTPServer 8000
 
 tags:
-	etags *.scm
+	etags *.js
 
 # http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 .PHONY: help
