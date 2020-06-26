@@ -14,24 +14,22 @@
       <div id="steplist" class="col">
         
         <label for="voice">voice</label>
-        <select name="voice" id="voice" onchange="change_language()">
-          <option value="zh">普通话</option>
+        <select name="voice" id="voice" onchange="change_language()"> 
           <option value="en">English</option>
           <option value="es">Lengua Española</option>
+          <option value="ja">日本語</option>
           <option value="ru">русский язык</option>
+          <option value="zh">普通话</option>
         </select>        
       </div> 
     </div>
 
-    
-    <script src="js/three.js"></script> 
-    <script src="colors.js"></script>
-    <script src="utter.js"></script>
-    <script src="easing.js"></script>
-    <script src="demo.js"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-    <script src="gram_schmidt.js"></script>
+    <script src="js/three.js"></script>
+    
+    <script type="module" src="demo.js"></script>
+    <script type="module" src="gram_schmidt.js"></script>
     
   </body>
 </html>
