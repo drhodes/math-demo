@@ -1,5 +1,5 @@
 var global_utterer = new SpeechSynthesisUtterance();
-global_utterer.lang = 'zh';
+global_utterer.lang = 'en';
 
 function set_global_utterer_language(language) {
     global_utterer.lang = language;
@@ -14,10 +14,11 @@ function change_language() {
     set_global_utterer_language(language);
 }
 
-function speak(msg_map) {
-    let text = msg_map[global_utterer.lang];
-    set_global_utterer_text(text);
-    window.speechSynthesis.speak(global_utterer);
+export function speak(msg_map) {
+    // 
+    // let text = msg_map[global_utterer.lang];
+    // set_global_utterer_text(text);
+    // window.speechSynthesis.speak(global_utterer);
 }
 
 
