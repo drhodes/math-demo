@@ -1,93 +1,22 @@
+import {vec, negate, show, hide} from "./util.js";
+import {scene, camera, sequence} from "./demo.js";
+import {AddSegment} from "./segment.js";
+import {Arrow} from "./arrow.js";
+import {Label} from "./label.js";
+import * as color from "./color.js";
+import {ease_camera_to,
+        ease_translate_to,
+        ease_arrow_head_to,
+        ease_segment_shift_by,
+       } from "./easing.js";
+import {StepList, Step, AddStep} from "./step.js";
+import {speak} from "./utter.js";
+import {AddArrow} from "./arrow.js";
 
 function add_coordinate_system() {
-    function f(v, w, color) {
-        var arr = Segment(v, w, color);
-        arr.setLength(1000);
-        arr.length=1000;
-        scene.add(arr);
-    }
-    f(vec(10, 0, 0), vec(-100, 0, 0), 0xFFAAAA);
-    f(vec(0, 10, 0), vec(0, -100, 0), 0xAAFFAA);
-    f(vec(0, 0, 10), vec(0, 0, -100), 0xAAAAFF);
-}
-
-function vec(x,y,z) {
-    return new THREE.Vector3(x,y,z);
-}
-
-function AddArrow(tail, head, color, radius) {
-    let arr = new FatArrow(color, radius);
-    arr.add(scene);
-    arr.update(tail, head);
-    return arr;
-}
-
-function AddStep(step_name, latex, init, sequence_callback) {
-    var step = new Step(step_name, latex, init, sequence_callback);
-    steps.add(step);
-    return step;
-}
-
-class Step {
-    constructor(step_name, latex, init, sequence_callback) {
-        this.node = document.createElement("div");
-        this.node.setAttribute("id", step_name);
-        this.node.setAttribute("class", "unselected");
-        this.node.append(MathJax.tex2svg(latex, {scale: 200}));
-        this.init = init;
-        this.callback = _=> {
-            this.node.setAttribute("class", "selected");
-            init();
-            return sequence_callback();
-        };        
-        this.node.addEventListener("click", this.callback);
-    }
-
-    select() { this.node.setAttribute("class", "selected"); }
-    unselect() { this.node.setAttribute("class", "unselected"); }
-    run() {
-        this.callback();
-    }        
-}
-
-class StepList {
-    constructor() {
-        MathJax.svgStylesheet();
-        this.steps = [];
-    }
-    
-    add(step) {
-        steplist.appendChild(step.node);
-        this.steps.push(step);
-        //sequence_callback();
-    }
-}
-
-let steps = new StepList();
-
-class Label {
-    // latex_img will eventually be latex source, but one step at a time.
-    constructor(latex_img) {
-        // MATH LABELS...
-        var geometry = new THREE.BufferGeometry();
-        var vertices = [];
-        var textureLoader = new THREE.TextureLoader();
-        var sprite = textureLoader.load(latex_img);
-        vertices.push(0, 0, 0);
-
-        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-
-        var material = new THREE.PointsMaterial({size:1,
-                                             map:sprite,
-                                             //depthTest: false,
-                                             transparent: true, });
-        this.particle = new THREE.Points(geometry, material);
-        scene.add(this.particle);
-    }
-
-    set_position(x, y, z) { this.particle.position.set(x, y, z); }
-    show() { this.particle.visible = true; }
-    hide() { this.particle.visible = false; }
+    AddSegment(vec(10, 0, 0), vec(-100, 0, 0), 0xFFAAAA);
+    AddSegment(vec(0, 10, 0), vec(0, -100, 0), 0xAAFFAA);
+    AddSegment(vec(0, 0, 10), vec(0, 0, -100), 0xAAAAFF);
 }
 
 class Demo {
@@ -99,96 +28,79 @@ class Demo {
 
 // -----------------------------------------------------------------------------
 function gram_schmidt() {
-    // this is the only code the maker needs to worry about.
+    // this is the only code the designer needs to worry about.
     add_coordinate_system();
 
-    // load some labels off of disk.  Eventually, filenames will be
+    // load some labels from disk.  Eventually, filenames will be
     // replaced with latex string, rendered in a browser canvas and
     // then mapped to an opengl texture.
-    let u1 = new Label("./imgs/u_1.png");
-    let e1 = new Label("./imgs/e_1.png");
-    let u2 = new Label("./imgs/u_2.png");
-    let e2 = new Label("./imgs/e_2.png");
+    let u1_label = new Label("./imgs/u_1.png");
+    let v1_label = new Label("./imgs/v_1.png");
+    let u2_label = new Label("./imgs/u_2.png");
+    let v2_label = new Label("./imgs/v_2.png");
+    let proj_v2_u1_label = new Label("./imgs/proj_v2_u1.png", 3.5);
     
-    u2.hide();
-    e2.hide();
-
-    // this is silly and needs to change. 3 is one because of scaling,
-    // vector length 1 is too short in the scene to see clearly what's
-    // going on. Need to adjust the arrow dimensions and zoom the
-    // camera closer so scaling factors don't need to be introduced.
-    const one = 3;
+    // factor this into the demo class.
+    function hide_all_labels() {
+        hide(u2_label, v2_label, u1_label, v1_label, proj_v2_u1_label);
+    }
     
     // Caution, for efficiency reason these three.js vectors are
     // potentially shared and mutable, this detail should be hidden
-    // from makers.
+    // from designers.
     
     let origin = vec(0,0,0);
-    let p1 = vec(7, .35, .67);
-    let p2 = vec(1.12, 6, -1.34);
-    let p3 = vec(2, 1, 5);
+    let p1 = vec(4, 0.35, .67);
+    let p2 = vec(2, 3, 1);
+    let p3 = vec(1, 1, 6);
     
-    let u1_arrow = AddArrow(origin, p1, COLOR_GRAY);
-    let u2_arrow = AddArrow(origin, p2, COLOR_GRAY);
-    let blue_arrow = AddArrow(origin, p3, COLOR_GRAY);
-    
-    let e1_arrow = AddArrow(vec(0,0,0), p1, COLOR_RED, .035);
-    let e2_arrow = AddArrow(vec(0,0,0), p2, COLOR_GREEN, .035);
+    let proj_v2_u1 = AddArrow(origin, vec(1,1,1), color.GREEN, .044);
+    let u1_arrow = AddArrow(origin, p1, color.GRAY, .034);
+    let u2_arrow = AddArrow(origin, p2, color.GRAY);
+    let v1_arrow = AddArrow(vec(0,0,0), p1, color.RED, .035);
+    let v2_arrow = AddArrow(vec(0,0,0), p2, color.GRAY, .035);
+    let v3_arrow = AddArrow(origin, p3, color.GRAY, .035);
 
-    // this bit of state needs to be managed by the Demo object, it
-    // should be transparent to the maker.
-    
-    let done = true;
+    function hide_all_arrows() {
+        hide(u1_arrow, u2_arrow, v1_arrow, v2_arrow, v3_arrow, proj_v2_u1);
+    }
 
+    let proj_segment = AddSegment(origin, origin, color.GRAY);
+    let u1_segment = AddSegment(origin, p1, color.GRAY);
+    
     /// ------------------------------------------------------------------    
     return new Demo(
-        // ------------------------------------------------------------------
-        // The anatomy of a step. 
-        
-        AddStep(
-            // ------------------------------------------------------------------
-            // First argument to AddStep: give the step a name
-            "first-step",
-
-            // ------------------------------------------------------------------
-            // Second argument: provide latex to be displayed step list
-            "\\mathbf{e}_1 = \\frac{\\mathbf{u}_1}{||\\mathbf{u}_1||}",
-
-            // ------------------------------------------------------------------
-            // Third argument is a function, specifically an initial
-            // configuration of the actors declared above.  This is
-            // necessary because people may select this step out of
-            // order.  For a transition to make sense, the starting
-            // point of the actors needs to be well defined, as well
-            // as the end point.
+        AddStep({
+            name: "u1=v1",
+            latex: "\\mathbf{u}_1 = \\mathbf{v}_1",
             
-            function() {                
-                camera.position.set(8,8,8);                
-                camera.lookAt(vec(3,0,0));
+            // ------------------------------------------------------------------
+            // Set the stage.  Users may select steps out of order.
+            // For a transition to make sense, the starting point of
+            // the actors needs to be well defined, as well as the end
+            // point.
+            init: function() {
+                hide_all_labels();
+                hide_all_arrows();
+                show(v1_arrow, v2_arrow, v3_arrow);
+                show(v1_label, v2_label, u1_label, u1_arrow);
 
+                sequence( ease_camera_to(vec(10, 10, 8), vec(0,0,3), 10) );
                 
-                u1_arrow.update(origin, p1);
-                u1.set_position(u1_arrow.head_x() + 0,
-                                u1_arrow.head_y() + 0,
-                                u1_arrow.head_z() + .3);
-                
-                let x = u1_arrow.head.clone();
-                x.multiplyScalar(.93);
-                
-                e1_arrow.update(origin, x);
+                v1_label.to_arrow_tip(v1_arrow);
+                let x = v1_arrow.head.clone();
+                x.multiplyScalar(2);
 
-
-                e1.set_position(e1_arrow.head_x() + 0,
-                                e1_arrow.head_y() + 0,
-                                e1_arrow.head_z() + .3);
-                
+                u1_arrow.update(origin, x);
+                u1_label.to_arrow_tip(u1_arrow);
+                v2_label.to_arrow_tip(v2_arrow);                
             },
-
-            function() {
+            
+            animate: function() {
                 // ignore mouse clicks while the animation is running.
                 // this should at the demo level.
-                if (!done) return true; 
-                
+                // if (!done) return true;                
+                let done = false;
                 // initialize the actors. need to take a much closer
                 // look at what it means for a step to be "done". The
                 // animation is done, yes, but all of these sequences
@@ -199,126 +111,125 @@ function gram_schmidt() {
                 // Demo can kick off a new Step and stop the current step.
 
                 // change the word "done" to "stop".
+                // TODO: this bit of state needs to be managed by the Demo object, it
+                // should be transparent to the designer.
                 done=false;
-
-
+                sequence(
+                    u1_arrow.ease_head_to(p1, 100),
+                    function() { done = true; },
+                );
                 
-                let x = p1.clone();
-                x.multiplyScalar(.4);
-                sequence([
-                    e1_arrow.ease_to(p1, x, 300),
-                    _=>done=true
-                ]);
-
-                sequence([ _=> { e1.set_position(e1_arrow.head_x() - .5,
-                                                 e1_arrow.head_y() + 0,
-                                                 e1_arrow.head_z() + .3);
-                                 return done;
-                               }]);
-                
-                // camera
-                sequence([
-                    ease_camera_to(vec(3, 10, 3), vec(3,0,0), 300), 
-                ]);
-
-                // voice
-                sequence([
-                    function() {
-                        speak({
-                            en: "The normal vector e1 is created by dividing the u one vector by its magnitude",
-                            zh: "通过将向量u1除以其长度来创建法线向量e1",
-                            ru: "Нормальный вектор e1 создается делением вектора u one на его величину",
-                            es: "El vector normal e1 se crea dividiendo el vector u uno por su magnitud",
-                        });
-                        return true;
-                    },
-                ]);
-            }),
-
-        AddStep(
-            // ------------------------------------------------------------------
-            // First argument to AddStep: give the step a name
-            "step-2",
-
-            // ------------------------------------------------------------------
-            // Second argument: provide latex to be displayed step list
-            "\\mathbf{u}_2 = \\mathbf{v}_2 - \\text{proj}_{u_1} (\\mathbf{v}_2)",
-
-            // ------------------------------------------------------------------
-            // Third argument is a function, specifically an initial
-            // configuration of the actors declared above.  This is
-            // necessary because people may select this step out of
-            // order.  For a transition to make sense, the starting
-            // point of the actors needs to be well defined, as well
-            // as the end point.
-            
-            function() {
-                u2.show();
-                e2.show();
-                camera.position.set(3,10,3);
-                camera.lookAt(vec(3,0,0));
-                u2_arrow.update(origin, p2); //u2_arrow.head);
-                u2.set_position(u2_arrow.head_x() + 0,
-                                u2_arrow.head_y() + 0,
-                                u2_arrow.head_z() + .3);
-                
-                let x = u2_arrow.head.clone();
-                x.multiplyScalar(.93);
-                
-                e2_arrow.update(origin, x);
-                e2.set_position(e2_arrow.head_x() + 0,
-                                e2_arrow.head_y() + 0,
-                                e2_arrow.head_z() + .3);
-            },
-
-            function() {
-                // ignore mouse clicks while the animation is running.
-                // this should at the demo level.
-                if (!done) return true; 
-                
-                // initialize the actors.
-                done=false;
- 
-                let x = p2.clone();
-                x.multiplyScalar(.4);
-                
-                sequence([
-                    e2_arrow.ease_to(p2, x, 300),                    
-                    _=>done=true
-                ]);
-
-                sequence([ _=> {
-                    e2.set_position(e2_arrow.head_x() - 0.5,
-                                    e2_arrow.head_y() + 0.0,
-                                    e2_arrow.head_z() + 0.3);
+                sequence(function() {
+                    let v = u1_arrow.head.clone();
+                    v.multiplyScalar(1.05);
+                    u1_label.set_position(v);
                     return done;
-                }]);
+                });
                 
+                sequence(v1_arrow.ease_opacity(1, 0, 100));
+                sequence(v1_label.ease_opacity(1, 0, 100));
+               
                 // camera
-                // sequence([
-                //     ease_camera_to(vec(10, 3, 5), vec(0,3,0), 300), 
-                // ]);
+                sequence(ease_camera_to(vec(3, 10, 10), vec(3,0,0), 100));
 
                 // voice
-                sequence([
-                    function() {
-                        speak({
-                            en: "The normal vector e2 is created by dividing the u one vector by its magnitude",
-                            zh: "通过将向量u1除以其长度来创建法线向量e2",
-                            ru: "Нормальный вектор e2 создается делением вектора u one на его величину",
-                            es: "El vector normal e2 se crea dividiendo el vector u uno por su magnitud",
-                        });
+                sequence(function() {
+                    speak({
+                        en: "let vector u sub one equal vector v sub one",
+                        es: "Hacer que el vector u sub 1 sea igual al vector v sub 1",
+                        ja: "「ベクトルu sub 1をベクトルv sub 1と等しくする",
+                        zh: "",
+                        ru: "",
+                    });
+                    return true;
+                });
+            }
+        }), 
+
+        // ------------------------------------------------------------------
+        AddStep({
+            name: "proj_u1",            
+            latex: "\\text{proj}_{\\mathbf{u}_1}(\\mathbf{v}_2)",
+            
+            init: function() {
+                hide_all_labels();
+                hide_all_arrows();                
+                show(u1_label, v2_arrow, v2_label);
+                
+                v2_arrow.update(origin, p2);
+                v2_label.to_arrow_tip(v2_arrow);                
+            },
+            
+            animate: function() {
+                show(v2_arrow, u1_arrow, proj_v2_u1, u1_label, proj_v2_u1_label);
+                v2_arrow.update(origin, p2);
+                
+                let proj = v2_arrow.projectOnto(u1_arrow);
+                proj_v2_u1.update_head(p2);
+                proj_segment.update_points(p2, proj);
+                
+                sequence( v1_arrow.ease_opacity(1, 0, 60)); 
+                sequence( proj_v2_u1.ease_head_to(proj, 60),
+                          function() {
+                              sequence( u1_arrow.ease_opacity(1, 0, 20)); 
+                              u1_arrow.hide();
+                              return true;
+                          });
+                sequence( v2_arrow.ease_opacity(1, .5, 20));
+                
+                let proj1 = proj.clone().multiplyScalar(1.0);
+                proj1.z += .2;
+                sequence( proj_v2_u1_label.ease_from_to(p2, proj1, 60), );
+                sequence( ease_camera_to(vec(-1, 6, 7), proj1, 20), );
+            }
+        }), 
+
+        // ------------------------------------------------------------------
+        AddStep({
+            name: "v2-proj_u1",            
+            latex: "\\mathbf{v}_2-\\text{proj}_{\\mathbf{u}_1}(\\mathbf{v}_2)",
+            
+            init: function() {
+                hide_all_labels();
+                hide_all_arrows();                
+                show(v2_arrow, u2_arrow, u1_arrow, proj_v2_u1);
+                show(u1_label, v2_label, proj_v2_u1_label);
+            },
+            
+            animate: function() {
+                let shift_vec = negate(proj_v2_u1.toVector3());
+                let slow = 60;
+                let fast = 10;
+                sequence( 
+                    // move the projection segment to the origin
+                    ease_segment_shift_by(proj_segment, shift_vec, slow),
+                    // move the projection vector up to head of v1
+                    ease_camera_to(vec(-3.1, -1.5, 10), origin , slow),
+                    //u2_arrow.ease_head_to(proj_segment.hw, 10),
+                    proj_v2_u1.ease_translate(p2.clone().add(negate(proj_v2_u1.head)), slow),
+                    u2_arrow.ease_head_to(p2.clone().add(negate(proj_v2_u1.head)), slow),
+                    proj_v2_u1_label.ease_opacity(1, 0, slow),
+                    _=> {
+                        proj_v2_u1_label.hide();
+                        u2_label.to_arrow_tip(u2_arrow, slow);
+                        u1_arrow.show();
                         return true;
                     },
-                ]);
-                return undefined;
-            })
-    );    
+                    u2_label.ease_opacity(0, 1, slow),
+                    v2_label.ease_opacity(1, 0, slow),
+                    v2_arrow.ease_opacity(1, 0, slow),
+                    proj_v2_u1.ease_opacity(1, 0, 10),
+                    ease_camera_to(vec(5 , 5, 5), origin , 50),
+                    ease_camera_to(vec(5 , -5, 5), origin , 50),
+                    ease_camera_to(vec(-2, -1, 12), origin , 50),
+                );
+                // fade in u1
+            }
+        }), // addstep
+    );
 }
 
-demo = gram_schmidt();
+let demo = gram_schmidt();
 demo.steps[0].init();
 console.log("loaded gram_schmidt");
-
-
 
